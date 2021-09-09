@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cd $(dirname $0)
+RESULT_FILE=DS_$(hostname).xml
+PARAMETERS="SPHardwareDataType SPNetworkDataType SPSoftwareDataType SPParallelATADataType SPSerialATADataType SPAudioDataType SPBluetoothDataType SPDiagnosticsDataType SPDiscBurningDataType SPFibreChannelDataType SPFireWireDataType SPDisplaysDataType SPMemoryDataType SPPCCardDataType SPPCIDataType SPParallelSCSIDataType SPPowerDataType SPPrintersDataType SPUSBDataType SPAirPortDataType SPFirewallDataType SPNetworkLocationDataType SPModemDataType SPNetworkVolumeDataType SPApplicationsDataType SPExtensionsDataType SPFrameworksDataType SPPrefPaneDataType SPStartupItemDataType SPStorageDataType SPNVMeDataType"
+system_profiler $PARAMETERS -xml | sed '/<\/plist>/d' > $RESULT_FILE
+
+printf "<users>%s</users>\n" `last |grep "logged in" | base64` >> $RESULT_FILE
+# Einträge unterhalb auskommentiert.
+# Ausgaben werden von Docusnap momentan nicht verwendet (Persistiert)
+# ! lsof Befehle falls benötigt, zukünftig mit parameter "-w" ausführen um Fehlermeldung zu unterdrücken.
+#printf "<netstathead>%s</netstathead>\n" `lsof -i | grep COMMAND | base64` >> $RESULT_FILE
+#printf "<netstat>%s</netstat>\n" `lsof -i | grep ESTABLISHED | base64` >> $RESULT_FILE
+#printf "<port>%s</port>" `cat /etc/services | sed '/^#.*$/d' | base64`  >> $RESULT_FILE
+printf "</plist>" >> $RESULT_FILE
